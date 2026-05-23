@@ -99,7 +99,6 @@ TEST(AtmControllerTest, SelectAccount) {
 }
 
 // test withdraw
-// TODO: low cash case
 TEST(AtmControllerTest, Withdraw) {
     AtmController atm;
     auto bank = make_shared<TestBank>();
@@ -121,6 +120,54 @@ TEST(AtmControllerTest, Withdraw) {
     atm.getMoney(postMoney);
     EXPECT_EQ(postMoney, initMoney - amount);
     EXPECT_EQ(cashBin->getCash(), initCash - amount);
+}
+
+// test withdraw (low cash case)
+TEST(AtmControllerTest, WithdrawLowCash) {
+    AtmController atm;
+    auto bank = make_shared<TestBank>();
+    auto cashBin = make_shared<TestCashBin>(100);  // very low cash
+    atm.setBank(bank);
+    atm.setCashBin(cashBin);
+    atm.insertCard(Card{"1234-5678-1234-5678"});
+
+    auto accounts = atm.getAvailableAccounts();
+    atm.selectAccount(accounts[0]);
+
+    int amount = 300; // to withdraw
+    int initMoney;
+    atm.getMoney(initMoney);            // money in system
+    int initCash = cashBin->getCash();  // money in real
+
+    EXPECT_FALSE(atm.withdraw(amount));
+    int postMoney;
+    atm.getMoney(postMoney);
+    EXPECT_EQ(postMoney, initMoney);
+    EXPECT_EQ(cashBin->getCash(), initCash);
+}
+
+// test withdraw (low account money case)
+TEST(AtmControllerTest, WithdrawLow) {
+    AtmController atm;
+    auto bank = make_shared<TestBank>();
+    auto cashBin = make_shared<TestCashBin>(10000);  // sufficient cash
+    atm.setBank(bank);
+    atm.setCashBin(cashBin);
+    atm.insertCard(Card{"1234-5678-1234-5678"});
+
+    auto accounts = atm.getAvailableAccounts();
+    atm.selectAccount(accounts[0]);
+
+    int amount = 300; // to withdraw, more than account money
+    int initMoney;
+    atm.getMoney(initMoney);            // money in system
+    int initCash = cashBin->getCash();  // money in real
+
+    EXPECT_FALSE(atm.withdraw(amount));
+    int postMoney;
+    atm.getMoney(postMoney);
+    EXPECT_EQ(postMoney, initMoney);
+    EXPECT_EQ(cashBin->getCash(), initCash);
 }
 
 // test deposit
