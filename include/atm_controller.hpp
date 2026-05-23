@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "bank.hpp"
+#include "cash_bin.hpp"
 
 using namespace std;
 
@@ -23,6 +24,11 @@ public:
     // Bank selection process is not implemented yet.
     void setBank(shared_ptr<Bank> bank) {
         bank_ = bank;
+    }
+
+    // TODO: check if cash bin is attached
+    void setCashBin(shared_ptr<CashBin> cashBin) {
+        cashBin_ = cashBin;
     }
 
     bool enterPin(const std::string& pin) {
@@ -64,6 +70,42 @@ public:
         return true;
     }
 
+    bool withdraw(int amount) {
+        cout << "Withdraw amount: " << amount << endl;
+        // check conditions
+        if (!account_) {
+            cout << "[Error] An account must be selected first." << endl;
+            return false;
+        }
+        if (!bank_) {
+            cout << "[Error] Bank is not set." << endl;
+            return false;
+        }
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return false;
+        }
+
+        // check money 
+        if (account_->money < amount) {
+            cout << "[Error] low account balance." << endl;
+            return false;
+        }
+        if (cashBin_->getCash() < amount) {
+            cout << "[Error] low cash in ATM." << endl;
+            return false;
+        }
+        if (!cashBin_->withdraw(amount)) {
+            cout << "[Error] Cash bin failed to work (withdraw)." << endl;
+            return false;
+        }
+        
+        // success case
+        account_->money -= amount;
+        bank_->withdraw(*account_, amount);
+        return true;
+    }
+
     std::shared_ptr<Card> getCard() const {
         return card_;
     }
@@ -76,4 +118,5 @@ private:
     std::shared_ptr<Card> card_ = nullptr;
     std::shared_ptr<Bank> bank_ = nullptr;
     std::shared_ptr<Account> account_ = nullptr;
+    std::shared_ptr<CashBin> cashBin_ = nullptr;
 };
