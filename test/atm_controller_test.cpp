@@ -43,6 +43,7 @@ TEST(AtmControllerTest, InvalidPin) {
     EXPECT_FALSE(atm.enterPin("4321"));
 }
 
+// test select and get account info
 TEST(AtmControllerTest, SelectAccount) {
     AtmController atm;
     auto bank = make_shared<TestBank>();
@@ -55,4 +56,7 @@ TEST(AtmControllerTest, SelectAccount) {
     EXPECT_NE(atm.getAccount(), nullptr);
     EXPECT_EQ(atm.getAccount()->id, accounts[0].id);
     EXPECT_EQ(atm.getAccount()->money, accounts[0].money);
+    int money;
+    EXPECT_EQ(atm.getMoney(money), true);
+    EXPECT_EQ(money, accounts[0].money);
 }

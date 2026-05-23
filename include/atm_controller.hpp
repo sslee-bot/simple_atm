@@ -55,6 +55,15 @@ public:
         cout << "Selected account: " << account.id << endl;
     }
 
+    bool getMoney(int& money) {
+        if (!account_)  {
+            cout << "[Error] An account must be selected first." << endl;
+            return false;
+        }
+        money = account_->money;
+        return true;
+    }
+
     std::shared_ptr<Card> getCard() const {
         return card_;
     }
