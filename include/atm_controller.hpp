@@ -27,6 +27,10 @@ public:
         return true;
     }
 
+    std::shared_ptr<Card> getCurrentCard() const {
+        return currentCard_;
+    }
+
 private:
     std::shared_ptr<Card> currentCard_;
 };
