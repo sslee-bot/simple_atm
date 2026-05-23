@@ -15,8 +15,8 @@ struct Card {
 class AtmController {
 public:
     void insertCard(const Card& card) {
-        currentCard_ = std::make_shared<Card>(card);
-        cout << "Inserted card number: " << currentCard_->number << endl;
+        card_ = std::make_shared<Card>(card);
+        cout << "Inserted card number: " << card_->number << endl;
     }
 
     // NOTE: Controller may know which bank should be called.
@@ -27,7 +27,7 @@ public:
 
     bool enterPin(const std::string& pin) {
         cout << "Input PIN number: " << pin << endl;
-        if (!currentCard_) {
+        if (!card_) {
             cout << "[Error] A card must be inserted first." << endl;
             return false;
         }
@@ -35,14 +35,36 @@ public:
             cout << "[Error] Bank is not set." << endl;
             return false;
         }
-        return bank_->verifyPin(*currentCard_, pin);
+        return bank_->verifyPin(*card_, pin);
     }
 
-    std::shared_ptr<Card> getCurrentCard() const {
-        return currentCard_;
+    std::vector<Account> getAvailableAccounts() {
+        if (!card_) {
+            cout << "[Error] A card must be inserted first." << endl;
+            return {};
+        }
+        if (!bank_) {
+            cout << "[Error] Bank is not set." << endl;
+            return {};
+        }
+        return bank_->getAccountsForCard(*card_);
+    }
+
+    void selectAccount(const Account& account) {
+        account_ = std::make_shared<Account>(account);
+        cout << "Selected account: " << account.id << endl;
+    }
+
+    std::shared_ptr<Card> getCard() const {
+        return card_;
+    }
+
+    std::shared_ptr<Account> getAccount() const {
+        return account_;
     }
 
 private:
-    std::shared_ptr<Card> currentCard_ = nullptr;
+    std::shared_ptr<Card> card_ = nullptr;
     std::shared_ptr<Bank> bank_ = nullptr;
+    std::shared_ptr<Account> account_ = nullptr;
 };
