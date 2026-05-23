@@ -4,6 +4,8 @@
 #include <memory>
 #include <iostream>
 
+#include "bank.hpp"
+
 using namespace std;
 
 struct Card {
@@ -17,14 +19,23 @@ public:
         cout << "Inserted card number: " << currentCard_->number << endl;
     }
 
+    // NOTE: Controller may know which bank should be called.
+    // Bank selection process is not implemented yet.
+    void setBank(shared_ptr<Bank> bank) {
+        bank_ = bank;
+    }
+
     bool enterPin(const std::string& pin) {
+        cout << "Input PIN number: " << pin << endl;
         if (!currentCard_) {
             cout << "[Error] A card must be inserted first." << endl;
             return false;
         }
-        cout << "Input PIN number: " << pin << endl;
-        // TODO: load account info from bank
-        return true;
+        if (!bank_) {
+            cout << "[Error] Bank is not set." << endl;
+            return false;
+        }
+        return bank_->verifyPin(*currentCard_, pin);
     }
 
     std::shared_ptr<Card> getCurrentCard() const {
@@ -32,5 +43,6 @@ public:
     }
 
 private:
-    std::shared_ptr<Card> currentCard_;
+    std::shared_ptr<Card> currentCard_ = nullptr;
+    std::shared_ptr<Bank> bank_ = nullptr;
 };

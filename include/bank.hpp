@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+struct Card; // defined in atm_controller_test.hpp
+
 struct Account {
     std::string id;
     int money;
