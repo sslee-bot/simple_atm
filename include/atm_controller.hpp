@@ -16,6 +16,10 @@ struct Card {
 class AtmController {
 public:
     void insertCard(const Card& card) {
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return;
+        }
         card_ = std::make_shared<Card>(card);
         cout << "Inserted card number: " << card_->number << endl;
     }
@@ -26,13 +30,16 @@ public:
         bank_ = bank;
     }
 
-    // TODO: check if cash bin is attached
     void setCashBin(shared_ptr<CashBin> cashBin) {
         cashBin_ = cashBin;
     }
 
     bool enterPin(const std::string& pin) {
         cout << "Input PIN number: " << pin << endl;
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return false;
+        }
         if (!card_) {
             cout << "[Error] A card must be inserted first." << endl;
             return false;
@@ -45,6 +52,10 @@ public:
     }
 
     std::vector<Account> getAvailableAccounts() {
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return {};
+        }
         if (!card_) {
             cout << "[Error] A card must be inserted first." << endl;
             return {};
@@ -57,11 +68,19 @@ public:
     }
 
     void selectAccount(const Account& account) {
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return;
+        }
         account_ = std::make_shared<Account>(account);
         cout << "Selected account: " << account.id << endl;
     }
 
     bool getMoney(int& money) {
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return false;
+        }
         if (!account_)  {
             cout << "[Error] An account must be selected first." << endl;
             return false;
@@ -73,6 +92,10 @@ public:
     bool withdraw(int amount) {
         cout << "Withdraw amount: " << amount << endl;
         // check conditions
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return false;
+        }
         if (!account_) {
             cout << "[Error] An account must be selected first." << endl;
             return false;
@@ -108,6 +131,10 @@ public:
 
     bool deposit(int amount) {
         cout << "Deposit amount: " << amount << endl;
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return false;
+        }
         if (!account_) {
             cout << "[Error] An account must be selected first." << endl;
             return false;

@@ -47,11 +47,11 @@ private:
     int cash_;
 };
 
-// TODO: check cash bin at begin
-
 // test card data saving
 TEST(AtmControllerTest, InsertCard) {
     AtmController atm;
+    auto cashBin = make_shared<TestCashBin>(10000);
+    atm.setCashBin(cashBin);
     atm.insertCard(Card{"1234-5678-1234-5678"});
     EXPECT_NE(atm.getCard(), nullptr);
 }
@@ -59,7 +59,9 @@ TEST(AtmControllerTest, InsertCard) {
 // test PIN verification if "valid"
 TEST(AtmControllerTest, ValidPin) {
     AtmController atm;
+    auto cashBin = make_shared<TestCashBin>(10000);
     auto bank = make_shared<TestBank>();
+    atm.setCashBin(cashBin);
     atm.setBank(bank);
     atm.insertCard(Card{"1234-5678-1234-5678"});
     EXPECT_TRUE(atm.enterPin("1234"));
@@ -68,7 +70,9 @@ TEST(AtmControllerTest, ValidPin) {
 // test PIN verification if "invalid"
 TEST(AtmControllerTest, InvalidPin) {
     AtmController atm;
+    auto cashBin = make_shared<TestCashBin>(10000);
     auto bank = make_shared<TestBank>();
+    atm.setCashBin(cashBin);
     atm.setBank(bank);
     atm.insertCard(Card{"1234-5678-1234-5678"});
     EXPECT_FALSE(atm.enterPin("4321"));
@@ -77,7 +81,9 @@ TEST(AtmControllerTest, InvalidPin) {
 // test select and get account info
 TEST(AtmControllerTest, SelectAccount) {
     AtmController atm;
+    auto cashBin = make_shared<TestCashBin>(10000);
     auto bank = make_shared<TestBank>();
+    atm.setCashBin(cashBin);
     atm.setBank(bank);
     atm.insertCard(Card{"1234-5678-1234-5678"});
 
