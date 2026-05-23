@@ -19,6 +19,9 @@ public:
     void withdraw(const Account& account, int amount) override {
         // NOTE: Bank should update its own balance records.
     }
+    void deposit(const Account& account, int amount) override {
+        // NOTE: Bank should update its own balance records.
+    }
 };
 
 class TestCashBin: public CashBin
@@ -36,6 +39,9 @@ public:
         }
         cash_ -= amount;
         return true;
+    }
+    void deposit(int amount) override {
+        cash_ += amount;
     }
 private:
     int cash_;
@@ -109,4 +115,28 @@ TEST(AtmControllerTest, Withdraw) {
     atm.getMoney(postMoney);
     EXPECT_EQ(postMoney, initMoney - amount);
     EXPECT_EQ(cashBin->getCash(), initCash - amount);
+}
+
+// test deposit
+TEST(AtmControllerTest, Deposit) {
+    AtmController atm;
+    auto bank = make_shared<TestBank>();
+    auto cashBin = make_shared<TestCashBin>(10000);
+    atm.setBank(bank);
+    atm.setCashBin(cashBin);
+    atm.insertCard(Card{"1234-5678-1234-5678"});
+
+    auto accounts = atm.getAvailableAccounts();
+    atm.selectAccount(accounts[0]);
+
+    int amount = 30;  // to deposit
+    int initMoney;
+    atm.getMoney(initMoney);
+    int initCash = cashBin->getCash();
+
+    EXPECT_TRUE(atm.deposit(amount));
+    int postMoney;
+    atm.getMoney(postMoney);
+    EXPECT_EQ(postMoney, initMoney + amount);
+    EXPECT_EQ(cashBin->getCash(), initCash + amount);
 }

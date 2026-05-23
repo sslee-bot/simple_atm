@@ -86,7 +86,7 @@ public:
             return false;
         }
 
-        // check money 
+        // check money, withdraw from cash bin
         if (account_->money < amount) {
             cout << "[Error] low account balance." << endl;
             return false;
@@ -103,6 +103,27 @@ public:
         // success case
         account_->money -= amount;
         bank_->withdraw(*account_, amount);
+        return true;
+    }
+
+    bool deposit(int amount) {
+        cout << "Deposit amount: " << amount << endl;
+        if (!account_) {
+            cout << "[Error] An account must be selected first." << endl;
+            return false;
+        }
+        if (!bank_) {
+            cout << "[Error] Bank is not set." << endl;
+            return false;
+        }
+        if (!cashBin_) {
+            cout << "[Error] Cash bin is not set." << endl;
+            return false;
+        }
+        
+        cashBin_->deposit(amount);
+        account_->money += amount;
+        bank_->deposit(*account_, amount);
         return true;
     }
 

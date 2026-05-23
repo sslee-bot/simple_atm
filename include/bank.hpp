@@ -16,4 +16,5 @@ public:
     virtual std::vector<Account> getAccountsForCard(const Card& card) = 0;
     virtual bool verifyPin(const Card& card, const std::string& pin) = 0;
     virtual void withdraw(const Account& account, int amount) = 0;
+    virtual void deposit(const Account& account, int amount) = 0;
 };
